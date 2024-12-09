@@ -1,16 +1,23 @@
 resource "aws_vpc" "ipv6_only_vpc" {
   assign_generated_ipv6_cidr_block = true
-  enable_dns_support               = true
-  enable_dns_hostnames             = true
+  cidr_block       = "10.0.0.0/28"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
     Name = "ipv6-only"
   }
 }
 
+resource "aws_vpc_ipv6_cidr_block_association" "ipv6_cidr" {
+  vpc_id                           = aws_vpc.ipv6_only_vpc.id
+  assign_generated_ipv6_cidr_block = true
+}
+
 resource "aws_subnet" "ipv6_only_subnet" {
-  vpc_id                          = aws_vpc.ipv6_only_vpc.id
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.ipv6_only_vpc.ipv6_cidr_block, 8, 0)
+  vpc_id            = aws_vpc.ipv6_only_vpc.id
+  cidr_block        = null  # No IPv4 CIDR block
+  ipv6_cidr_block   = cidrsubnet(aws_vpc_ipv6_cidr_block_association.ipv6_cidr.ipv6_cidr_block, 8, 0)
   assign_ipv6_address_on_creation = true
 
   tags = {
