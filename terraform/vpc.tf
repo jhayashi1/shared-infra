@@ -10,7 +10,7 @@ resource "aws_vpc" "ipv6_only" {
 }
 
 resource "aws_internet_gateway" "ipv6_igw" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.ipv6_only.id
 
   tags = {
     Name = "ipv6-igw"
@@ -18,9 +18,9 @@ resource "aws_internet_gateway" "ipv6_igw" {
 }
 
 resource "aws_subnet" "ipv6_a" {
-  vpc_id           = aws_vpc.main.id
+  vpc_id           = aws_vpc.ipv6_only.id
   cidr_block       = null
-  ipv6_cidr_block  = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 0)
+  ipv6_cidr_block  = cidrsubnet(aws_vpc.ipv6_only.ipv6_cidr_block, 8, 0)
   map_public_ip_on_launch = true
   availability_zone = "us-east-1a"
 
@@ -30,9 +30,9 @@ resource "aws_subnet" "ipv6_a" {
 }
 
 resource "aws_subnet" "ipv6_b" {
-  vpc_id           = aws_vpc.main.id
+  vpc_id           = aws_vpc.ipv6_only.id
   cidr_block       = null
-  ipv6_cidr_block  = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, 1)
+  ipv6_cidr_block  = cidrsubnet(aws_vpc.ipv6_only.ipv6_cidr_block, 8, 1)
   map_public_ip_on_launch = true
   availability_zone = "us-east-1b"
 
@@ -42,11 +42,11 @@ resource "aws_subnet" "ipv6_b" {
 }
 
 resource "aws_route_table" "ipv6_route_table" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.ipv6_only.id
 
   route {
     cidr_block = "::/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.ipv6_igw.id
   }
 
   tags = {
